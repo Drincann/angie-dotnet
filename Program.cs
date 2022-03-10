@@ -1,11 +1,4 @@
-﻿using System.Net.Sockets;
-using System.Net;
-
-
-using Angie;
-
-
-var app = new Angie.Application();
+﻿var app = new Angie.Application();
 
 app.get("/hello", (ctx) => {
     ctx.setStatus(200).resHTML("<h1>Hello World</h1>");
