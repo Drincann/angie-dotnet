@@ -74,7 +74,7 @@ public class Request : IRequest {
     this.originReq = originReq;
     this.method = (HTTPMethod)Enum.Parse(typeof(HTTPMethod), originReq.HttpMethod);
     this.path = originReq?.Url?.AbsolutePath ?? "";
-    this.body = originReq?.InputStream.ToString();
+    this.body = originReq != null ? new StreamReader(originReq.InputStream).ReadToEnd() : null;
     this.query = this.parseQueryString(originReq?.Url?.Query?.TrimStart('?'));
   }
 }
