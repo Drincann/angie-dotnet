@@ -20,6 +20,7 @@ public interface IRequest {
   public string path { get; }
   public string? body { get; }
   public Dictionary<string, List<string>>? query { get; }
+  public Dictionary<string, string>? routeParams { get; set; }
 }
 
 public interface IResponse {
@@ -37,6 +38,7 @@ public interface IContext {
   public IContext resString(string str);
   public IContext resHTML(string html);
   public string? getQuery(string key);
+  public string? getRouteParam(string key);
 }
 
 

@@ -1,8 +1,4 @@
-using System;
-using System.IO;
 using System.Net;
-using System.Net.Sockets;
-using System.Collections.Generic;
 namespace Angie;
 
 class HTTPListenerHTTPServer : IHTTPServer {
@@ -36,7 +32,6 @@ class HTTPListenerHTTPServer : IHTTPServer {
       ctx.res.body.Flush();
       res.Close();
     }
-
   }
 }
 
@@ -53,6 +48,7 @@ public class Request : IRequest {
   public string path { get; private set; }
   public string? body { get; private set; }
   public Dictionary<string, List<string>>? query { get; private set; }
+  public Dictionary<string, string>? routeParams { get; set; }
   private Dictionary<string, List<string>>? parseQueryString(string? queryString) {
     if (queryString == null || queryString.Length == 0) return null;
     try {
@@ -79,7 +75,7 @@ public class Request : IRequest {
     this.method = (HTTPMethod)Enum.Parse(typeof(HTTPMethod), originReq.HttpMethod);
     this.path = originReq?.Url?.AbsolutePath ?? "";
     this.body = originReq?.InputStream.ToString();
-    this.query = this.parseQueryString(originReq?.Url?.Query.Remove(0, 1));
+    this.query = this.parseQueryString(originReq?.Url?.Query?.TrimStart('?'));
   }
 }
 public class Response : IResponse {
@@ -141,5 +137,9 @@ public class Context : IContext {
       return this.req.query[key][0];
     }
     return null;
+  }
+
+  public string? getRouteParam(string key) {
+    return this.req.routeParams?[key];
   }
 }
