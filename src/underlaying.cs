@@ -1,4 +1,5 @@
 using System.Net;
+using System.Threading.Tasks;
 namespace Angie;
 
 class HTTPListenerHTTPServer : IHTTPServer {
@@ -19,18 +20,21 @@ class HTTPListenerHTTPServer : IHTTPServer {
       var connection = this.listener.GetContext();
       var req = connection.Request;
       var res = connection.Response;
+      // async call
+      Task.Run(() => {
+        Context ctx = new(req, res);
 
-      Context ctx = new(req, res);
-
-      foreach (var handler in this.handlers) {
-        handler(ctx);
-      }
-      res.StatusCode = ctx.res.status;
-      foreach (var header in ctx.res.header) {
-        res.AddHeader(header.Key, header.Value);
-      }
-      ctx.res.body.Flush();
-      res.Close();
+        foreach (var handler in this.handlers) {
+          Task.Run(() => handler(ctx));
+          Console.WriteLine($"{ctx.req.method} {ctx.req.path}");
+        }
+        res.StatusCode = ctx.res.status;
+        foreach (var header in ctx.res.header) {
+          res.AddHeader(header.Key, header.Value);
+        }
+        ctx.res.body.Flush();
+        res.Close();
+      });
     }
   }
 }
