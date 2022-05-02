@@ -2,11 +2,11 @@ namespace Angie;
 public class Router : IMiddleware {
   private Dictionary<HTTPMethod, Tools.Trie> routes = new()
   {
-        { HTTPMethod.GET, new() },
-        { HTTPMethod.POST, new() },
-        { HTTPMethod.PUT, new() },
-        { HTTPMethod.DELETE, new() },
-    };
+    { HTTPMethod.GET, new() },
+    { HTTPMethod.POST, new() },
+    { HTTPMethod.PUT, new() },
+    { HTTPMethod.DELETE, new() },
+  };
   private Router route(HTTPMethod method, string path, Handler handler) {
     routes[method].insert(path.Split('/').ToList(), handler);
     return this;
