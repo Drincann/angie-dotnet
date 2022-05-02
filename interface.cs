@@ -1,19 +1,25 @@
 namespace Angie;
 
 public interface IApplication {
-  public IApplication route(HTTPMethod method, string path, Handler handler);
-  public IApplication get(string path, Handler handler);
-  public IApplication post(string path, Handler handler);
-  public IApplication put(string path, Handler handler);
-  public IApplication delete(string path, Handler handler);
-
-
+  // public IApplication route(HTTPMethod method, string path, Handler handler);
+  // public IApplication get(string path, Handler handler);
+  // public IApplication post(string path, Handler handler);
+  // public IApplication put(string path, Handler handler);
+  // public IApplication delete(string path, Handler handler);
+  public IApplication use(IMiddleware middleware);
+  public IApplication use(MiddlewareFunc middleware);
   public void listen(int port, Callback<int?>? callback);
   public void listen(int port);
 
 }
 public delegate void Handler(IContext ctx);
 public delegate void Callback<T>(T data, System.Exception? err);
+
+public delegate void NextFunc();
+public delegate void MiddlewareFunc(IContext ctx, NextFunc next);
+public interface IMiddleware {
+  void handle(IContext ctx, NextFunc next);
+}
 
 public interface IRequest {
   public HTTPMethod method { get; }
