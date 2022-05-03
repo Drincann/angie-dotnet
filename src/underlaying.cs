@@ -23,11 +23,6 @@ class HTTPListenerHTTPServer : IHTTPServer {
       // async call
       Task.Run(() => {
         Context ctx = new(req, res);
-
-        foreach (var handler in this.handlers) {
-          Task.Run(() => handler(ctx));
-          Console.WriteLine($"{ctx.req.method} {ctx.req.path}");
-        }
         res.StatusCode = ctx.res.status;
         foreach (var header in ctx.res.header) {
           res.AddHeader(header.Key, header.Value);
