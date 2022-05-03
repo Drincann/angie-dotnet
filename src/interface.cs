@@ -38,6 +38,7 @@ public interface IResponse {
 public interface IContext {
   public IRequest req { get; }
   public IResponse res { get; }
+  public object? this[string key] { get; set; }
   public IContext setStatus(int status);
   public IContext setHeader(string key, string value);
   public IContext resJson(object obj);

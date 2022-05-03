@@ -91,7 +91,16 @@ public class Context : IContext {
 
   public IRequest req { get; private set; }
   public IResponse res { get; private set; }
+  private Dictionary<string, object?> state { get; set; } = new();
 
+  public object? this[string key] {
+    get {
+      return this.state.GetValueOrDefault(key, null);
+    }
+    set {
+      this.state[key] = value;
+    }
+  }
   public Context(HttpListenerRequest originReq, HttpListenerResponse originRes) {
     this.req = new Request(originReq);
     this.res = new Response(originRes);
