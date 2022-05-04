@@ -5,6 +5,7 @@ namespace Angie;
 class HTTPListenerHTTPServer : IHTTPServer {
   private HttpListener listener = new();
   private List<Handler> handlers = new();
+  private Stream bodyBuffer = new MemoryStream();
   public void addHandler(Handler HTTPHandler) {
     this.handlers.Add(HTTPHandler);
   }
@@ -22,13 +23,17 @@ class HTTPListenerHTTPServer : IHTTPServer {
       var res = connection.Response;
       // async call
       Task.Run(() => {
-        Context ctx = new(req, res);
+        Context ctx = new(req, res, bodyBuffer);
         Task.WaitAll(this.handlers.Select(handle => Task.Run(() => handle(ctx))).ToArray());
         res.StatusCode = ctx.res.status;
         foreach (var header in ctx.res.header) {
           res.AddHeader(header.Key, header.Value);
         }
         ctx.res.body.Flush();
+        this.bodyBuffer.Position = 0;
+        this.bodyBuffer.CopyTo(res.OutputStream);
+        this.bodyBuffer.Position = 0;
+        this.bodyBuffer.SetLength(0);
         res.Close();
       });
     }
@@ -82,9 +87,10 @@ public class Response : IResponse {
   public Dictionary<string, string> header { get; private set; }
   public int status { get; set; }
   public StreamWriter body { get; set; }
-  public Response(HttpListenerResponse originRes) {
+
+  public Response(HttpListenerResponse originRes, Stream body) {
     this.status = 200;
-    this.body = new(originRes.OutputStream);
+    this.body = new(body);
     this.header = new();
   }
 }
@@ -102,9 +108,9 @@ public class Context : IContext {
       this.state[key] = value;
     }
   }
-  public Context(HttpListenerRequest originReq, HttpListenerResponse originRes) {
+  public Context(HttpListenerRequest originReq, HttpListenerResponse originRes, Stream body) {
     this.req = new Request(originReq);
-    this.res = new Response(originRes);
+    this.res = new Response(originRes, body);
   }
 
   public IContext setStatus(int status) {
