@@ -98,6 +98,7 @@ public class Context : IContext {
 
   public IRequest req { get; private set; }
   public IResponse res { get; private set; }
+  public IApplication? app { get; set; }
   private Dictionary<string, object?> state { get; set; } = new();
 
   public object? this[string key] {

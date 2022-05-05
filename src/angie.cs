@@ -33,6 +33,7 @@ public class Application : IApplication {
   }
   private void handle(IContext ctx) {
     if (this.middlewares.Count == 0) return;
+    ctx.app = this;
     int mdwIdx = -1;
     NextFunc next = () => { };
     next = () => {
