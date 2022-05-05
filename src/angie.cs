@@ -9,7 +9,7 @@ class MiddlewareFuncWrapper : IMiddleware {
     func(ctx, next);
   }
 }
-public class Application : IApplication {
+public class Application : Tools.EventEmitter, IApplication {
   private IHTTPServer underlyingServer;
   private List<IMiddleware> middlewares;
 

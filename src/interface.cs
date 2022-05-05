@@ -1,6 +1,11 @@
 namespace Angie;
+public delegate void EventHandler(params object[] args);
+public interface IEventEmitter {
+  public void on(string eventName, EventHandler callback);
+  public void emit(string eventName, params object[] args);
+}
 
-public interface IApplication {
+public interface IApplication : IEventEmitter {
   // public IApplication route(HTTPMethod method, string path, Handler handler);
   // public IApplication get(string path, Handler handler);
   // public IApplication post(string path, Handler handler);

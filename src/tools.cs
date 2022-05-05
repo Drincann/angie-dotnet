@@ -1,7 +1,21 @@
 using System.Text.RegularExpressions;
+using Angie;
 
 namespace Angie.Tools;
 
+public class EventEmitter : IEventEmitter {
+  private Dictionary<string, List<EventHandler>> events = new();
+  public void on(string eventName, EventHandler callback) {
+    if (!events.ContainsKey(eventName)) events[eventName] = new();
+    events[eventName].Add(callback);
+  }
+  public void emit(string eventName, params object[] args) {
+    if (!events.ContainsKey(eventName)) return;
+    foreach (var callback in events[eventName]) {
+      callback(args);
+    }
+  }
+}
 struct MatchResult {
   public Dictionary<string, string> paramDict;
   public TrieNode? matched;
